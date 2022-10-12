@@ -2,8 +2,6 @@
 
 Reciever
 
-./android_cli compile -b andriod:? drone.ino
-
 */
 #include <nRF24L01.h>
 #include <printf.h>
@@ -21,7 +19,7 @@ const uint64_t pipeIn = 0xE8E8F0F0E1LL;
 
 RF24 radio(8, 10); // RF24 is the transmitter/reciever (transciever), 8 & 10 arduino wires to reciever
 
-struct MyValues {
+struct StickValues {
     byte throttle;
     byte yaw;
     byte pitch;
@@ -30,11 +28,11 @@ struct MyValues {
     byte sw2;
 };
 
-MyValues data;
+StickValues data;
 
 void resetData() {
     data.throttle = 0;
-    data.yaw = 127;
+    data.yaw = 127; // center/middle
     data.pitch = 127;
     data.roll = 127;
     data.sw1 = 0;
@@ -42,20 +40,25 @@ void resetData() {
 }
 
 void setup() {
-    resetData();
 
-    Serial.begin(9600);
+    // boiler plate
+    {
+        resetData();
 
-    radio.begin();
-    radio.setDataRate(RF24_250KBPS); // Both endpoints must have this set the same
-    radio.setAutoAck(false);
+        Serial.begin(9600); // ignore
 
-    radio.openReadingPipe(1, pipeIn);
+        radio.begin(); // ignore
+        radio.setDataRate(RF24_250KBPS); // both endpoints must have this set the same, 250 kp/s for both ends
+        radio.setAutoAck(false);
+    }
+
+    // start reading
+    radio.openReadingPipe(1, pipeIn); // 1 pin
     radio.startListening();
 
-    ESC1.attach(9, 1000, 2000);
-    ESC1.write(0);
-    delay(2000);
+    ESC1.attach(9, 1000, 2000); // pin, min pulse width, max pulse width in microseconds
+    ESC1.write(0); // null
+    delay(2000); // sleep mls
     ESC2.attach(6);
     ESC2.write(0);
     delay(2000);
@@ -69,14 +72,14 @@ void setup() {
 
 void loop() {
     while (radio.available()) {
-        radio.read(&data, sizeof(MyValues));
+        radio.read(&data, sizeof(StickValues)); // get into data
     }
 
     int val = data.throttle;
     Serial.print(val);
     Serial.print("\n");
 
-    ESC1.write(val);
+    ESC1.write(val); // 0 - 180, speed
     ESC2.write(val);
     ESC3.write(val);
     ESC4.write(val);
