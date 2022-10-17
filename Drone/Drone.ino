@@ -7,6 +7,7 @@ Reciever
 #include <printf.h>
 #include <RF24.h>
 #include <RF24_config.h>
+#include <assert.h>
 
 #include <Servo.h>
 
@@ -56,16 +57,16 @@ void setup() {
     radio.openReadingPipe(1, pipeIn); // 1 pin
     radio.startListening();
 
-    ESC1.attach(9, 1000, 2000); // pin, min pulse width, max pulse width in microseconds
+    ESC1.attach(9, 0, 0); // pin, min pulse width, max pulse width in microseconds
     ESC1.write(0); // null
     delay(2000); // sleep mls
-    ESC2.attach(6);
+    ESC2.attach(6, 0, 0); // TODO figure out what these 0's should be (anywhere from 700 to 10000 ?)
     ESC2.write(0);
     delay(2000);
-    ESC3.attach(3);
+    ESC3.attach(3, 0, 0);
     ESC3.write(0);
     delay(2000);
-    ESC4.attach(5);
+    ESC4.attach(5, 0, 0);
     ESC4.write(0);
     delay(2000);
 }
@@ -73,7 +74,6 @@ void setup() {
 void loop() {
     // ! Temp code
     if (true) {
-
         byte throttle = data.throttle * 180 / 127;
         Serial.print(throttle);
         Serial.print("\n");
