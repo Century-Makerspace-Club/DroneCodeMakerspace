@@ -20,12 +20,12 @@ const uint64_t pipeIn = 0xE8E8F0F0E1LL;
 RF24 radio(8, 10); // RF24 is the transmitter/reciever (transciever), 8 & 10 arduino wires to reciever
 
 struct StickValues {
-    byte throttle;
-    byte yaw;
-    byte pitch;
-    byte roll;
-    byte sw1;
-    byte sw2;
+    byte throttle; // left - up down
+    byte yaw; // left - left right
+    byte pitch; // right - up down
+    byte roll; // right - left right
+    byte button1;
+    byte button2;
 };
 
 StickValues data;
@@ -35,8 +35,8 @@ void resetData() {
     data.yaw = 127; // center/middle
     data.pitch = 127;
     data.roll = 127;
-    data.sw1 = 0;
-    data.sw2 = 0;
+    data.button1 = 0;
+    data.button2 = 0;
 }
 
 void setup() {
@@ -71,13 +71,32 @@ void setup() {
 }
 
 void loop() {
+    // ! Temp code
+    if (true) {
+
+        byte throttle = data.throttle * 180 / 127;
+        Serial.print(throttle);
+        Serial.print("\n");
+
+        const int val = 180;
+
+        ESC1.write(val); // 0 - 180, speed
+        ESC2.write(val);
+        ESC3.write(val);
+        ESC4.write(val);
+
+        return;
+    }
+
     while (radio.available()) {
         radio.read(&data, sizeof(StickValues)); // get into data
     }
 
-    int val = data.throttle;
-    Serial.print(val);
+    byte throttle = data.throttle * 180 / 127;
+    Serial.print(throttle);
     Serial.print("\n");
+
+    const int val = 180;
 
     ESC1.write(val); // 0 - 180, speed
     ESC2.write(val);
