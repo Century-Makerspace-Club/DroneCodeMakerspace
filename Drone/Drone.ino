@@ -1,7 +1,5 @@
 /*
-
 Reciever
-
 */
 #include <nRF24L01.h>
 #include <printf.h>
@@ -57,16 +55,16 @@ void setup() {
     radio.openReadingPipe(1, pipeIn); // 1 pin
     radio.startListening();
 
-    ESC1.attach(9, 0, 0); // pin, min pulse width, max pulse width in microseconds
+    ESC1.attach(9, 1000, 1500); // pin, min pulse width, max pulse width in microseconds
     ESC1.write(0); // null
     delay(2000); // sleep mls
-    ESC2.attach(6, 0, 0); // TODO figure out what these 0's should be (anywhere from 700 to 10000 ?)
+    ESC2.attach(6, 700, 1200); // TODO figure out what these 0's should be (anywhere from 700 to 10000 ?)
     ESC2.write(0);
     delay(2000);
-    ESC3.attach(3, 0, 0);
+    ESC3.attach(3, 700, 1200);
     ESC3.write(0);
     delay(2000);
-    ESC4.attach(5, 0, 0);
+    ESC4.attach(5, 700, 1200);
     ESC4.write(0);
     delay(2000);
 }
@@ -78,7 +76,7 @@ void loop() {
         Serial.print(throttle);
         Serial.print("\n");
 
-        const int val = 180;
+        const int val = 100;
 
         ESC1.write(val); // 0 - 180, speed
         ESC2.write(val);
