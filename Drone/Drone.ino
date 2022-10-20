@@ -1,5 +1,5 @@
 /*
-Reciever
+Basic Interaction Directly with Drone
 */
 #include <nRF24L01.h>
 #include <printf.h>
